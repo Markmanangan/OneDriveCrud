@@ -1,0 +1,79 @@
+﻿@page "/employees/create"
+@using Microsoft.EntityFrameworkCore
+@using EmployeeAPI.Models
+@inject IDbContextFactory<EmployeeAPI.Data.EmployeeAPIContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+<h2>Employee</h2>
+<hr />
+<div class="row">
+    <div class="col-md-6 col-lg-5 col-xl-4">
+        <EditForm method="post" Model="Employee" OnValidSubmit="AddEmployee" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+
+            <div class="mb-3">
+                <label for="name" class="form-label">Name</label>
+                <InputText id="name"
+                           class="form-control"
+                           @bind-Value="Employee.Name"
+                           aria-describedby="nameHelp"
+                           required />
+                <ValidationMessage For="() => Employee.Name" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <InputText id="email"
+                           type="email"
+                           class="form-control"
+                           @bind-Value="Employee.Email"
+                           aria-describedby="emailHelp" />
+                <ValidationMessage For="() => Employee.Email" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone</label>
+                <InputText id="phone"
+                           class="form-control"
+                           @bind-Value="Employee.Phone"
+                           aria-describedby="phoneHelp"
+                           required />
+                <ValidationMessage For="() => Employee.Phone" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="location" class="form-label">Location</label>
+                <InputText id="location"
+                           class="form-control"
+                           @bind-Value="Employee.Location"
+                           aria-describedby="locationHelp"
+                           required />
+                <ValidationMessage For="() => Employee.Location" class="text-danger" />
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Create</button>
+                <a href="/employees" class="btn btn-secondary">Back to List</a>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Employee Employee { get; set; } = default!;
+
+    protected override void OnInitialized() => Employee ??= new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddEmployee()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Employee.Add(Employee);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/employees");
+    }
+}
