@@ -1,22 +1,49 @@
 ﻿@page "/"
+
 @using Microsoft.EntityFrameworkCore
 @using EmployeeAPI.Models
 @using EmployeeAPI.Data
 @inject IDbContextFactory<EmployeeAPIContext> DbFactory
+@inject NavigationManager Nav
 
 <PageTitle>Employees</PageTitle>
 
 <div class="container py-4">
 
-    <!-- Header -->
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-        <h1 class="h3 fw-bold mb-0">
+    <!-- ✅ Header (Title ABOVE controls) -->
+    <div class="mb-4">
+
+        <!-- Page Title -->
+        <h1 class="h3 fw-bold mb-2">
             <i class="bi bi-people-fill text-primary me-2"></i>
             Employees
         </h1>
-        <span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-2 rounded-pill">
-            @(employees?.Count ?? 0) total
-        </span>
+
+        <!-- Controls Row -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+
+            <!-- Search (LEFT) -->
+            <input class="form-control"
+                   style="width: 260px;"
+                   placeholder="Search employees…"
+                   @bind="searchText"
+                   @bind:event="oninput" />
+
+            <!-- Meta + Action (RIGHT) -->
+            <div class="d-flex align-items-center gap-3">
+
+                <span class="text-muted small">
+                    @(FilteredEmployees.Count()) total
+                </span>
+
+                <button class="btn btn-primary btn-sm"
+                        @onclick="@(() => Nav.NavigateTo("/employees"))">
+                    Manage Employees
+                </button>
+
+            </div>
+        </div>
+
     </div>
 
     @if (isLoading)
@@ -25,23 +52,24 @@
             <div class="spinner-border text-primary"></div>
         </div>
     }
-    else if (employees?.Count == 0)
+    else if (!FilteredEmployees.Any())
     {
         <!-- Empty state -->
         <div class="text-center py-5">
             <i class="bi bi-people display-4 text-muted mb-3"></i>
-            <h5 class="text-muted">No employees yet</h5>
-            <p class="text-muted small">Once you add employees, they will appear here.</p>
+            <h5 class="text-muted">No employees found</h5>
+            <p class="text-muted small">
+                Try adjusting your search or add new employees.
+            </p>
         </div>
     }
     else
     {
-        <!-- Card wrapper -->
+        <!-- Table Card -->
         <div class="card border-0 shadow-sm rounded-4">
             <div class="table-responsive">
                 <table class="table align-middle table-hover mb-0">
 
-                    <!-- Light header (cleaner than dark) -->
                     <thead class="bg-light">
                         <tr class="text-muted small">
                             <th class="ps-4">Employee ID</th>
@@ -53,28 +81,26 @@
                     </thead>
 
                     <tbody>
-                        @foreach (var emp in employees!)
+                        @foreach (var emp in FilteredEmployees)
                         {
                             <tr class="employee-row">
-                                <td class="ps-4 fw-semibold text-muted">
+
+                                <td class="ps-4 employee-id">
                                     EMP-@emp.Id.ToString("D4")
                                 </td>
 
-                                <!-- Name (primary) -->
                                 <td>
                                     <div class="fw-semibold text-dark">
                                         @emp.Name
                                     </div>
                                 </td>
 
-                                <!-- Email -->
                                 <td>
                                     <div class="text-muted small">
                                         @emp.Email
                                     </div>
                                 </td>
 
-                                <!-- Phone -->
                                 <td>
                                     <i class="bi bi-telephone-fill text-success me-2"></i>
                                     <span class="fw-medium">
@@ -82,12 +108,12 @@
                                     </span>
                                 </td>
 
-                                <!-- Location -->
                                 <td class="text-end pe-4">
                                     <span class="badge bg-light text-dark fw-medium px-3 py-2 rounded-pill">
                                         @emp.Location
                                     </span>
                                 </td>
+
                             </tr>
                         }
                     </tbody>
@@ -100,22 +126,32 @@
 </div>
 
 <style>
-    /* Row hover effect */
     .employee-row:hover {
         background-color: #f8f9fa;
         transition: background-color 0.15s ease-in-out;
     }
 
-    /* Improve table spacing */
     table td, table th {
         padding-top: 1rem;
         padding-bottom: 1rem;
+        vertical-align: middle;
+    }
+
+    .employee-id {
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 0.9rem;
+        letter-spacing: 0.05em;
+        color: #6c757d;
+        white-space: nowrap;
+        width: 140px;
     }
 </style>
 
 @code {
-    private List<Employee>? employees;
+
+    private List<Employee> employees = new();
     private bool isLoading;
+    private string searchText = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -124,10 +160,10 @@
 
     private async Task LoadEmployeesAsync()
     {
+        isLoading = true;
+
         try
         {
-            isLoading = true;
-
             using var context = DbFactory.CreateDbContext();
             employees = await context.Employee
                                      .AsNoTracking()
@@ -139,4 +175,17 @@
             isLoading = false;
         }
     }
+
+    // ✅ Unified Home-page filtering
+    private IEnumerable<Employee> FilteredEmployees =>
+        string.IsNullOrWhiteSpace(searchText)
+            ? employees
+            : employees.Where(emp =>
+                emp.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase)
+                || emp.Email.Contains(searchText, StringComparison.OrdinalIgnoreCase)
+                || emp.Phone.Contains(searchText, StringComparison.OrdinalIgnoreCase)
+                || emp.Location.Contains(searchText, StringComparison.OrdinalIgnoreCase)
+                || emp.Id.ToString().Contains(searchText)
+                || $"EMP-{emp.Id:D4}".Contains(searchText, StringComparison.OrdinalIgnoreCase)
+            );
 }
