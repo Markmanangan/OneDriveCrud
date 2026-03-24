@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Employee API</title>
+    <base href="/" />
+
+    https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css
+    https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css
+    https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css
+</head>
+<body>
+
+    <div id="app">Loading...</div>
+
+    https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js</script>
+    https://cdn.jsdelivr.net/npm/sweetalert2@11</script>
+
+    <script>
+        window.showToast = function (id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            bootstrap.Toast.getOrCreateInstance(el).show();
+        };
+
+        window.confirmDelete = async function (name) {
+            const result = await Swal.fire({
+                title: "Are you sure?",
+                text: `Delete ${name}? This cannot be undone.`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it"
+            });
+            return result.isConfirmed;
+        };
+    </script>
+
+</body>
+</html>

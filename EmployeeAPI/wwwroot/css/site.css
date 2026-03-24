@@ -1,0 +1,19 @@
+﻿/* Top bar background */
+.top-row.navbar {
+    background-color: #0d1117; /* change to your color */
+}
+/* Vertical/slide menu background */
+.nav-scrollable {
+    background-color: #111827; /* change to your color */
+}
+    /* Optional: link colors inside the menu */
+    .nav-scrollable .nav-link {
+        color: #e5e7eb;
+    }
+
+        .nav-scrollable .nav-link.active,
+        .nav-scrollable .nav-link:hover {
+            color: #ffffff;
+            background-color: rgba(255,255,255,0.06);
+            border-radius: .375rem;
+        }

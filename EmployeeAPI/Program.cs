@@ -1,38 +1,36 @@
 ﻿using EmployeeAPI.Components;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using EmployeeAPI.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ✅ Database
 builder.Services.AddDbContextFactory<EmployeeAPIContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("EmployeeAPIContext") ?? throw new InvalidOperationException("Connection string 'EmployeeAPIContext' not found.")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("EmployeeAPIContext")
+        ?? throw new InvalidOperationException("Missing connection string.")
+    )
+);
 
-builder.Services.AddQuickGridEntityFrameworkAdapter();
-
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-// Add services to the container.
+// ✅ Razor & Blazor
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseExceptionHandler("/Error");
     app.UseHsts();
-    app.UseMigrationsEndPoint();
 }
 
 app.UseHttpsRedirection();
-
-
 app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+   .AddInteractiveServerRenderMode();
 
 app.Run();

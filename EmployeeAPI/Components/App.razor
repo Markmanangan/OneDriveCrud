@@ -11,15 +11,12 @@
     <link rel="stylesheet" href="@Assets["EmployeeAPI.styles.css"]" />
 
     <ImportMap />
-
-    <!-- ✅ Leslie logo as favicon -->
     <link rel="icon" type="image/png" href="images/leslie.png" />
-
     <HeadOutlet />
 </head>
 
 <body>
-    <Routes />
+    <Routes @rendermode="InteractiveServer" />
     <script src="_framework/blazor.web.js"></script>
 </body>
 

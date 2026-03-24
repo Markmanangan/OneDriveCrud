@@ -7,21 +7,23 @@ namespace EmployeeAPI.Models
         public long Id { get; set; }
 
         [Required(ErrorMessage = "Name is required.")]
-        [StringLength(100, ErrorMessage = "Name must be at most 100 characters.")]
+        [StringLength(100)]
         public string Name { get; set; } = string.Empty;
 
- 
-        [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
-        [StringLength(254, ErrorMessage = "Email must be at most 254 characters.")]
+        [EmailAddress]
+        [StringLength(254)]
         public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Phone is required.")]
-        [Phone(ErrorMessage = "Please enter a valid phone number.")]
-        [StringLength(30, ErrorMessage = "Phone must be at most 30 characters.")]
+        [Required]
+        [Phone]
+        [StringLength(30)]
         public string Phone { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Location is required.")]
-        [StringLength(100, ErrorMessage = "Location must be at most 100 characters.")]
+        [Required]
+        [StringLength(100)]
         public string Location { get; set; } = string.Empty;
+
+        // ✅ OneDrive file link
+        public string? FileUrl { get; set; }
     }
 }

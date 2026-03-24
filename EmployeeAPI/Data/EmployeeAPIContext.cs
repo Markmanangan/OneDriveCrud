@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using EmployeeAPI.Models;
 
 namespace EmployeeAPI.Data
 {
     public class EmployeeAPIContext : DbContext
     {
-        public EmployeeAPIContext (DbContextOptions<EmployeeAPIContext> options)
+        public EmployeeAPIContext(DbContextOptions<EmployeeAPIContext> options)
             : base(options)
         {
         }
 
-        public DbSet<EmployeeAPI.Models.Employee> Employee { get; set; } = default!;
+        public DbSet<Employee> Employee => Set<Employee>();
     }
 }
